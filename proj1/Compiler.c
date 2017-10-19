@@ -172,30 +172,29 @@ static int expr()
 	case 'x':
 	    return variable();
 	case 'y':
-        return variable();
-    case 'z':
-        return variable();
+	    return variable();
+	case 'z':
+	    return variable();
 	case '0':
-        return digit();
+	    return digit();
 	case '1':
-        return digit();
+	    return digit();
 	case '2':
-        return digit();
+	    return digit();
 	case '3':
-        return digit();
+	    return digit();
 	case '4':
-        return digit();
+	    return digit();
 	case '5':
-        return digit();
+	    return digit();
 	case '6':
-        return digit();
+	    return digit();
 	case '7':
-        return digit();
+	    return digit();
 	case '8':
-        return digit();
+	    return digit();
 	case '9':
-        return digit();
-
+	    return digit();
 	default:
 		ERROR("Symbol %c unknown\n", token);
 		exit(EXIT_FAILURE);
@@ -204,21 +203,33 @@ static int expr()
 
 static void assign()
 {
-	if(!is_identifier(token)){
-		ERROR("Expected identifier\n");
-		eixt(EXIT_FAILURE);
-	}
-	return variable();
-	next_token()
-
-	if(token != '='){
-		ERROR("Assignment error. Expected '='\n");
-		exit(EXIT_FAILURE);
-	}
-	next_token();
-	
-	return expr();
-
+  switch(token){
+    case 'a':
+    case 'b':
+    case 'c':
+    case 'd':
+    case 'e':
+    case 'f':
+    case 'g':
+    case 'h':
+    case 'i':
+    case 'j':
+    case 'k':
+    case 'x':  
+    case 'y':
+    case 'z':
+      variable();
+      if(token != '='){
+	ERROR("Assign error. Expected '='. Unexpected char '%c'", token);
+	exit(EXIT_FAILURE);
+      }
+      next_token();
+      expr();
+      break;
+    default:
+      ERROR("Assign error. Illegal variable assign.");
+      exit(EXIT_FAILURE);
+  }
 }
 
 static void print()
@@ -228,7 +239,7 @@ static void print()
 		exit(EXIT_FAILURE);
 	}
 	next_token();
-	return variable();
+	variable();
 }
 
 static void stmt()
