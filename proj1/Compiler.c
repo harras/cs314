@@ -199,16 +199,15 @@ static void assign() // revise... does var need a register? what is loading wher
 	    case 'x':  
 	    case 'y':
 	    case 'z':
-	    	var = variable();
+	    	var = token;
 	    	next_token();
 	    	if(token != '='){
 				ERROR("Assign error. Expected '='. Unexpected char '%c'", token);
 				exit(EXIT_FAILURE);
 	      	}
 	    	next_token();
-	    	reg = next_register();
 	    	reg = expr();
-	    	CodeGen(STOREAI, reg, var, EMPTY_FIELD); //?
+	    	CodeGen(STOREAI, var, reg, EMPTY_FIELD); //?
 	    	break;
 	    default:
 	    	ERROR("Assign error. Illegal variable assign.");
@@ -216,7 +215,7 @@ static void assign() // revise... does var need a register? what is loading wher
 	  }
 }
 
-static void print()  // revise also... 
+static void print() // I think this is right
 {
 	char var;
 	int reg;
@@ -226,7 +225,7 @@ static void print()  // revise also...
 		exit(EXIT_FAILURE);
 	}
 	next_token();
-	var = variable();
+	var = token
 	reg = next_register();
 	CodeGen(OUTPUTAI, var, reg);
 }
