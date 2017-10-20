@@ -148,51 +148,29 @@ static int expr()
 		CodeGen(DIV, left_reg, right_reg, reg);
 		return reg;
 	case 'a':
-	    return variable();
 	case 'b':
-	    return variable();
 	case 'c':
-	    return variable();
 	case 'd':
-	    return variable();
 	case 'e':
-	    return variable();
 	case 'f':
-	    return variable();
 	case 'g':
-	    return variable();
 	case 'h':
-	    return variable();
 	case 'i':
-	    return variable();
 	case 'j':
-	    return variable();
 	case 'k':
-	    return variable();
 	case 'x':
-	    return variable();
 	case 'y':
-	    return variable();
 	case 'z':
 	    return variable();
 	case '0':
-	    return digit();
 	case '1':
-	    return digit();
 	case '2':
-	    return digit();
 	case '3':
-	    return digit();
 	case '4':
-	    return digit();
 	case '5':
-	    return digit();
 	case '6':
-	    return digit();
 	case '7':
-	    return digit();
 	case '8':
-	    return digit();
 	case '9':
 	    return digit();
 	default:
@@ -201,45 +179,56 @@ static int expr()
 	}
 }
 
-static void assign()
+static void assign() // revise... does var need a register? what is loading where?
 {
-  switch(token){
-    case 'a':
-    case 'b':
-    case 'c':
-    case 'd':
-    case 'e':
-    case 'f':
-    case 'g':
-    case 'h':
-    case 'i':
-    case 'j':
-    case 'k':
-    case 'x':  
-    case 'y':
-    case 'z':
-      variable();
-      if(token != '='){
-	ERROR("Assign error. Expected '='. Unexpected char '%c'", token);
-	exit(EXIT_FAILURE);
-      }
-      next_token();
-      expr();
-      break;
-    default:
-      ERROR("Assign error. Illegal variable assign.");
-      exit(EXIT_FAILURE);
-  }
+	char var;
+	int reg;
+
+	switch(token){
+		case 'a':
+		case 'b':
+		case 'c':
+		case 'd':
+		case 'e':
+	    case 'f':
+	    case 'g':
+	    case 'h':
+	    case 'i':
+	    case 'j':
+	    case 'k':
+	    case 'x':  
+	    case 'y':
+	    case 'z':
+	    	var = variable();
+	    	next_token();
+	    	if(token != '='){
+				ERROR("Assign error. Expected '='. Unexpected char '%c'", token);
+				exit(EXIT_FAILURE);
+	      	}
+	    	next_token();
+	    	reg = next_register();
+	    	reg = expr();
+	    	CodeGen(STOREAI, reg, var, EMPTY_FIELD); //?
+	    	break;
+	    default:
+	    	ERROR("Assign error. Illegal variable assign.");
+	      	exit(EXIT_FAILURE);
+	  }
 }
 
-static void print()
+static void print()  // revise also... 
 {
+	char var;
+	int reg;
+
 	if(token != '!'){
 		ERROR("Print error. Expected '!'\n");
 		exit(EXIT_FAILURE);
 	}
 	next_token();
-	variable();
+	var = variable();
+	reg = next_register();
+	CodeGen(OUTPUTAI, var, reg);
 }
 
 static void stmt()
