@@ -185,6 +185,10 @@ static int expr()
 static void assign() // Something is going wrong here, idk what
 {
 	int reg;
+	int var;
+	//int offset;
+
+	var = token;
 
 	next_token();
 	if(token != '='){
@@ -194,7 +198,8 @@ static void assign() // Something is going wrong here, idk what
 
 	next_token();
 	reg = expr();
-	CodeGen(STOREAI, token, reg, EMPTY_FIELD);
+	CodeGen(STOREAI, reg, 0, (var-'a')*4);
+	//offset = offset + 4;
 }
 
 static void print()
