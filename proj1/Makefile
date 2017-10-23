@@ -16,7 +16,7 @@ compile: Compiler.c InstrUtils.c InstrUtils.h Utils.c Utils.h
 constfolding: ConstFolding.c InstrUtils.c InstrUtils.h Utils.c Utils.c
 	gcc $(CCFLAGS) ConstFolding.c InstrUtils.c Utils.c Utils.h -o constfolding
 
-strengthreduct: ConstFolding.c InstrUtils.c InstrUtils.h Utils.c Utils.c
+strengthreduct: StrengthReduction.c InstrUtils.c InstrUtils.h Utils.c Utils.c
 	gcc $(CCFLAGS) StrengthReduction.c InstrUtils.c Utils.c Utils.h -o strengthreduct
 
 clean:
