@@ -78,8 +78,10 @@ void PrintInstructionList(FILE * outfile, Instruction * instr)
 		exit(EXIT_FAILURE);
 	}
 
-	/* YOUR CODE GOES HERE */
-
+	while(instr != LastInstruction(instr)){ // would do all but last one
+		PrintInstruction(instr);
+		instr = instr->next;
+	}
 }
 
 Instruction *ReadInstruction(FILE * infile)
@@ -253,7 +255,7 @@ Instruction *ReadInstructionList(FILE * infile)
 		tail = instr;
 	}
 	return head;
-}
+} 
 
 Instruction *LastInstruction(Instruction * instr)
 {
