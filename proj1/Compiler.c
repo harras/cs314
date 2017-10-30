@@ -116,156 +116,154 @@ static int expr()
 
 	switch (token) {
 
-	case '+':
-		next_token();
-		left_reg = expr();
-		right_reg = expr();
-		reg = next_register();
-		CodeGen(ADD, left_reg, right_reg, reg);
-		return reg;
+		case '+':
+			next_token();
+			left_reg = expr();
+			right_reg = expr();
+			reg = next_register();
+			CodeGen(ADD, left_reg, right_reg, reg);
+			return reg;
 
-	case '-':
-		next_token();
-		left_reg = expr();
-		right_reg = expr();
-		reg = next_register();
-		CodeGen(SUB, left_reg, right_reg, reg);
-		return reg;
+		case '-':
+			next_token();
+			left_reg = expr();
+			right_reg = expr();
+			reg = next_register();
+			CodeGen(SUB, left_reg, right_reg, reg);
+			return reg;
 
-	case '*':
-		next_token();
-		left_reg = expr();
-		right_reg = expr();
-		reg = next_register();
-		CodeGen(MUL, left_reg, right_reg, reg);
-		return reg;
+		case '*':
+			next_token();
+			left_reg = expr();
+			right_reg = expr();
+			reg = next_register();
+			CodeGen(MUL, left_reg, right_reg, reg);
+			return reg;
 
-	case '/':
-		next_token();
-		left_reg = expr();
-		right_reg = expr();
-		reg = next_register();
-		CodeGen(DIV, left_reg, right_reg, reg);
-		return reg;
-	case 'a':
-	case 'b':
-	case 'c':
-	case 'd':
-	case 'e':
-	case 'f':
-	case 'g':
-	case 'h':
-	case 'i':
-	case 'j':
-	case 'k':
-	case 'x':
-	case 'y':
-	case 'z':
-	    return variable();
-	case '0':
-	case '1':
-	case '2':
-	case '3':
-	case '4':
-	case '5':
-	case '6':
-	case '7':
-	case '8':
-	case '9':
-	    return digit();
-	default:
-		ERROR("Symbol %c unknown\n", token);
-		exit(EXIT_FAILURE);
+		case '/':
+			next_token();
+			left_reg = expr();
+			right_reg = expr();
+			reg = next_register();
+			CodeGen(DIV, left_reg, right_reg, reg);
+			return reg;
+
+		case 'a':
+		case 'b':
+		case 'c':
+		case 'd':
+		case 'e':
+		case 'f':
+		case 'g':
+		case 'h':
+		case 'i':
+		case 'j':
+		case 'k':
+		case 'x':
+		case 'y':
+		case 'z':
+		    return variable();
+
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':
+		    return digit();
+
+		default:
+			ERROR("Expression error. Symbol %c is not a operator, variable, or digit.\n", token);
+			exit(EXIT_FAILURE);
 	}
 }
 
-static void assign() // revise... does var need a register? what is loading where?
+static void assign() // Something is going wrong here, idk what
 {
-	char var;
 	int reg;
+	int var;
+	//int offset;
 
+	var = token;
+
+	next_token();
+	if(token != '='){
+		ERROR("Assign error. Expected '='. Unexpected '%c' token. \n", token);
+		exit(EXIT_FAILURE);
+	}
+
+	next_token();
+	reg = expr();
+	CodeGen(STOREAI, reg, 0, (var-'a')*4);
+	//offset = offset + 4;
+}
+
+static void print()
+{
+	next_token();
+	if(!is_identifier(token)){
+		ERROR("Print error. Expected identifier. Unexpected '%c' token. \n", token);
+		exit(EXIT_FAILURE);
+	}
+	CodeGen(OUTPUTAI, token, EMPTY_FIELD, EMPTY_FIELD);
+	next_token();
+}
+
+static void stmt()
+{
 	switch(token){
 		case 'a':
 		case 'b':
 		case 'c':
 		case 'd':
 		case 'e':
-	    case 'f':
-	    case 'g':
-	    case 'h':
-	    case 'i':
-	    case 'j':
-	    case 'k':
-	    case 'x':  
-	    case 'y':
-	    case 'z':
-	    	var = token;
-	    	next_token();
-	    	if(token != '='){
-				ERROR("Assign error. Expected '='. Unexpected char '%c'", token);
-				exit(EXIT_FAILURE);
-	      	}
-	    	next_token();
-	    	reg = expr();
-	    	CodeGen(STOREAI, var, reg, EMPTY_FIELD); //?
-	    	break;
-	    default:
-	    	ERROR("Assign error. Illegal variable assign.");
-	      	exit(EXIT_FAILURE);
-	  }
-}
-
-static void print() // I think this is right
-{
-	char var;
-	int reg;
-
-	if(token != '!'){
-		ERROR("Print error. Expected '!'\n");
-		exit(EXIT_FAILURE);
-	}
-	next_token();
-	var = token
-	reg = next_register();
-	CodeGen(OUTPUTAI, var, reg);
-}
-
-static void stmt()
-{
-	if(token == '!')
-		return print();
-	return assign();
-}
-
-static void morestmts()
-{
-	switch(token){
-		case ';':
-			next_token();
-			return stmtlist();
-		case '.': 				// epsilon case
-			break;
+		case 'f':
+		case 'g':
+		case 'h':
+		case 'i':
+		case 'j':
+		case 'k':
+		case 'x':
+		case 'y':
+		case 'z':
+		    assign();
+		    return;
+		case '!':
+			print();
+			return;
 		default:
-			ERROR("Unexpected %c delimiter.\n", token);
+			ERROR("Unexpected %c symbol\n", token);
 			exit(EXIT_FAILURE);
 	}
 }
 
+static void morestmts()
+{
+	if(token == ';'){
+		next_token();
+		stmtlist();
+	}
+	// no error case here, handled by program()
+}
+
 static void stmtlist()
 {
-	return stmt();
-	next_token();
-	return morestmts();	
+	stmt();
+	morestmts();	
 }
 
 static void program()
 {
-	return stmtlist();
+	stmtlist();
 
 	if (token != '.') {
-	  ERROR("Program error.  Current input symbol is %c\n", token);
+	  ERROR("Program error. Unexpected '%c' character.\n", token);
 	  exit(EXIT_FAILURE);
-	};
+	}
 }
 
 /*************************************************************************/
