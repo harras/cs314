@@ -13,17 +13,6 @@
 #include "InstrUtils.h"
 #include "Utils.h"
 
-int buffer_is_free(Instruction* i){				// this is gross but
-	Instruction *tail = LastInstruction(i);// I swear it makes sense
-	if(i->next == tail){		
-		if(i->next->next == tail){
-			return 1;
-		}
-		return 0;
-	}
-	return 0;
-} 
-
 int main()
 {
 	Instruction *head;
@@ -34,19 +23,59 @@ int main()
 		exit(EXIT_FAILURE);
 	}
 
-	Instruction *A, *B, *C, *temp;
-	temp = head;
-	while(buffer_is_free(temp) == 1)
-		A = temp->next;
-		B = temp->next->next;
-		C = temp->next->next->next;
-		
-		//Consider errors that may arise this iterative process. Edge
-		//cases. Looks like it may skip a check...?
-	}
+	int flag = 0;	
+	Instruction *A, *B, *C;
 	
+	A = head;
+	if(head->next)
+		B = head->next;	
+	if(head->next->next)
+		C = head->next->next;
+	
+	
+	while(C){ 
+		if(A->opcode == LOADI && B->opcode == LOADI){
+			switch(C->opcode){
+				case ADD:
+					A->opcode = LOADI;
+					A->field1 = A->field1 + B->field1;
+					A->field2 = C->field3;
+					flag = 1;
+					break;				
+				case SUB:
+					A->opcode = LOADI;
+					A->field1 = A->field1 - B->field1;
+					A->field2 = C->field3;
+					flag = 1;
+					break;	
+				case MUL:
+					A->opcode = LOADI;
+					A->field1 = A->field1 * B->field1;
+					A->field2 = C->field3;
+					flag = 1;
+					break;	
+				default:
+					break;
+			}
+			if(flag == 1){
+				A->next = C->next;
+				C->next->prev = A;
+				free(B);
+				free(C);
+				flag = 0;
+			}
+		}
+		if(A->next)
+			A = A->next;
+		if(A->next)
+			B = A->next;
+		if(B->next)
+			C = B->next;
+		else 
+			break;
+	}
 
-	if (head) 
+	if (head)
 		PrintInstructionList(stdout, head);
 	
 	return EXIT_SUCCESS;

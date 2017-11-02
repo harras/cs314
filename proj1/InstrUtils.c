@@ -78,8 +78,8 @@ void PrintInstructionList(FILE * outfile, Instruction * instr)
 		exit(EXIT_FAILURE);
 	}
 
-	while(instr != LastInstruction(instr)){ // would do all but last one
-		PrintInstruction(instr);
+	while(instr){
+		PrintInstruction(outfile, instr);
 		instr = instr->next;
 	}
 }
